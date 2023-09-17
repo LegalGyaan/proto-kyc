@@ -2,60 +2,45 @@
 import React, { useState } from "react";
 import Card from "./components/Card";
 import { Topics } from "./components/Topics";
+import { tags } from "../db/tags";
+import { Blogs } from "../db/blog";
 
 const page = () => {
-  const [first, setfirst] = useState();
+  const [filter, setFilter] = useState(["all"]);
+  const [filteredBlogs, setFilteredBlogs] = useState(Blogs);
+
+  const handleFilter = (tag) => {
+    if (filter.includes(tag)) {
+      setFilter(filter.filter((t) => t !== tag));
+    } else {
+      setFilter([...filter, tag]);
+    }
+  };
+
+  React.useEffect(() => {
+    if (filter.includes("all")) {
+      setFilteredBlogs(Blogs);
+    } else {
+      setFilteredBlogs(
+        Blogs.filter((blog) => {
+          return blog.tags.some((tag) => filter.includes(tag));
+        })
+      );
+    }
+  }, [filter]);
+
   return (
     <>
       {/* CONTENT */}
       <div className=" flex pt-16 px-12 gap-3">
         {/* Articles Cards */}
         <div>
-          <Card
-            title={
-              "I Went to a Bumble IRL Event And Finally Understood Why Modern Dating is a Mess"
-            }
-            author={"Heart Affairs Carlyn Beccia in Heart Affairs"}
-            articleImg={
-              "https://miro.medium.com/v2/resize:fill:350:235/1*gg20PlKE5SyC9t_mqyxShQ.jpeg"
-            }
-          />
-          <Card
-            title={
-              "I Went to a Bumble IRL Event And Finally Understood Why Modern Dating is a Mess"
-            }
-            author={"Heart Affairs Carlyn Beccia in Heart Affairs"}
-            articleImg={
-              "https://miro.medium.com/v2/resize:fill:350:235/1*gg20PlKE5SyC9t_mqyxShQ.jpeg"
-            }
-          />
-          <Card
-            title={
-              "I Went to a Bumble IRL Event And Finally Understood Why Modern Dating is a Mess"
-            }
-            author={"Heart Affairs Carlyn Beccia in Heart Affairs"}
-            articleImg={
-              "https://miro.medium.com/v2/resize:fill:350:235/1*gg20PlKE5SyC9t_mqyxShQ.jpeg"
-            }
-          />
-          <Card
-            title={
-              "I Went to a Bumble IRL Event And Finally Understood Why Modern Dating is a Mess"
-            }
-            author={"Heart Affairs Carlyn Beccia in Heart Affairs"}
-            articleImg={
-              "https://miro.medium.com/v2/resize:fill:350:235/1*gg20PlKE5SyC9t_mqyxShQ.jpeg"
-            }
-          />
-          <Card
-            title={
-              "I Went to a Bumble IRL Event And Finally Understood Why Modern Dating is a Mess"
-            }
-            author={"Heart Affairs Carlyn Beccia in Heart Affairs"}
-            articleImg={
-              "https://miro.medium.com/v2/resize:fill:350:235/1*gg20PlKE5SyC9t_mqyxShQ.jpeg"
-            }
-          />
+          <h1 className="text-4xl font-bold mb-5">Top Stories</h1>
+          <div className="flex flex-col gap-5">
+            {filteredBlogs.map((blog) => (
+              <Card key={blog.title} {...blog} />
+            ))}
+          </div>
         </div>
 
         {/* RIGHT CONTENT */}
@@ -64,13 +49,9 @@ const page = () => {
             Discover more of what matters to you
           </h3>
           <div className="block justify-evenly">
-            <Topics />
-            <Topics />
-            <Topics />
-            <Topics />
-            <Topics />
-            <Topics />
-            <Topics />
+            {tags.map((tag) => (
+              <Topics key={tag} tag={tag} filterHandler={handleFilter} />
+            ))}
           </div>
 
           <a className="  text-green-400 hover:text-black cursor-pointer">
